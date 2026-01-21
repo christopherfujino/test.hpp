@@ -1,0 +1,57 @@
+#pragma once
+
+#include <cstdio>
+#include <format>
+#include <functional>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+namespace _CHRIS_MONOREPO_CPP_TEST {
+
+typedef std::function<void()> VoidFunc;
+
+template <typename T> inline void expect(T first, T second) {
+  if (first == second) {
+    return;
+  }
+  std::string msg = std::format("`{}` != `{}`", std::to_string(first),
+                                std::to_string(second));
+  throw std::runtime_error(msg);
+}
+
+class Test {
+public:
+  Test(std::string n, VoidFunc t) : test(t), name(n) {}
+  std::function<void()> test;
+  std::string name;
+};
+
+class Runner {
+public:
+  Runner(std::vector<Test> tests) : tests(tests) { printf("Running tests: "); }
+  ~Runner() {
+    size_t total = tests.size();
+    printf("\n\n%ld out of %ld tests passed.\n", total - failures, total);
+  }
+
+  inline int run() {
+    for (size_t i = 0; i < tests.size(); i++) {
+      try {
+        tests[i].test();
+        printf("\u2713");
+      } catch (const std::runtime_error &e) {
+        fprintf(stderr, "[Failure] %s => %s\n", tests[i].name.data(), e.what());
+        printf("\u2717");
+        failures++;
+      }
+    }
+    return failures == 0 ? 0 : 1;
+  }
+
+private:
+  std::vector<Test> tests;
+  int failures = 0;
+};
+
+} // namespace _CHRIS_MONOREPO_CPP_TEST
