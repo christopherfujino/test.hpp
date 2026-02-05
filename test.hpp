@@ -5,6 +5,7 @@
 #include <functional>
 #include <stdexcept>
 #include <string>
+#include <type_traits> // for is_same
 #include <vector>
 
 namespace _CHRIS_MONOREPO_CPP_TEST {
@@ -15,8 +16,15 @@ template <typename T> inline void expect(T first, T second) {
   if (first == second) {
     return;
   }
-  std::string msg = std::format("`{}` != `{}`", std::to_string(first),
-                                std::to_string(second));
+
+  std::string msg;
+  if constexpr (std::is_same<T, std::string>::value) {
+    msg = std::format("`{}` != `{}`", first, second);
+  } else {
+    msg = std::format("`{}` != `{}`", std::to_string(first),
+                                  std::to_string(second));
+    throw std::runtime_error("nay");
+  }
   throw std::runtime_error(msg);
 }
 

@@ -4,6 +4,7 @@ project(test.hpp-test VERSION 0.1)
 
 # These CMAKE_* variables apply to all future targets
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Generate a compile_commands.json file
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
