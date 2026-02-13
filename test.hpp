@@ -1,7 +1,15 @@
 #pragma once
 
 #include <cstdio>
+
+// we should be testing for __cpp_lib_format, but
+// https://github.com/llvm/llvm-project/issues/77773 with -std=c++20
+#if __cplusplus < 202002L
+#error "the test.hpp library requires C++ >= 20"
+#else
 #include <format>
+#endif
+
 #include <functional>
 #include <stdexcept>
 #include <string>
@@ -25,6 +33,14 @@ template <typename T> inline void expect(T first, T second) {
                                   std::to_string(second));
     throw std::runtime_error("nay");
   }
+  throw std::runtime_error(msg);
+}
+
+template <> inline void expect(std::string first, std::string second) {
+  if (first == second) {
+    return;
+  }
+  std::string msg = std::format("`{}` != `{}`", first, second);
   throw std::runtime_error(msg);
 }
 
